@@ -3,7 +3,13 @@ BDGSoundPlayer
 
 Lightweight iOS soundplayer to load/cache simple .caf/wav files or play mp3 files using avaudioplayer.
 
-#Simple files (caf, .wav, etc)
+
+## Installation using Cocoapods
+```
+pod 'BDGSoundPlayer'
+```
+
+##Simple files (caf, .wav, etc)
 
 Load the file using:
 
@@ -14,14 +20,14 @@ Play the file using
 [[BDGSoundPlayer sharedBDGSoundPlayer] playSound:soundID]
 
 
-# Files that need AVAudioPlayer (MP3, etc.)
+## Files that need AVAudioPlayer (MP3, etc.)
 
 Play the file immediately using:
 
 [[BDGSoundPlayer sharedBDGSoundPlayer] playSoundFromFile:fileName];
 
 
-## Additional options
+### Additional options
 
 Enable/Disable all sounds
 
