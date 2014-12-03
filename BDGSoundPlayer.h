@@ -14,10 +14,18 @@ extern NSString *const BDGSoundOn;
     
 }
 
+#define BDGSoundPlayah [BDGSoundPlayer sharedBDGSoundPlayer]
+
 +(BDGSoundPlayer *)sharedBDGSoundPlayer;
 
+//Complex sounds for AVAudioPlayer
+-(void)stopSoundFromFile;
+-(void)playSoundFromFile:(NSURL *)fileURL;
+-(void)playSoundFromFile:(NSURL *)fileURL indefinitely:(BOOL)indefinitely;
+-(void)fadeSound:(float)duration fadeOut:(BOOL)fadeOut;
+
+//Simple sounds for AudioToolBox
 -(void)playSound:(NSString *)soundID;
--(void)playSoundFromFile:(NSString *)fileName;
 -(void)loadSounds:(NSArray *)soundNamesWithNameAsID;
 -(void)loadSound:(NSString *)fileName forID:(NSString *)soundID;
 

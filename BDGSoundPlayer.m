@@ -37,6 +37,63 @@ NSString *const BDGSoundOn = @"BDGSoundOn";
     return self;	
 }
 
+#pragma mark AVAudioPlayer Sounds
+
+-(void)stopSoundFromFile
+{
+    [self.audioPlayer stop];
+}
+
+-(void)fadeSound:(float)duration fadeOut:(BOOL)fadeOut
+{
+    if((fadeOut && self.audioPlayer.volume <= 0.0f) || (!fadeOut && self.audioPlayer.volume >= 1.0f)) {
+        return;
+    }
+    
+    float durationVolumeValue = 1.0f/duration/10.0f;
+    if(fadeOut) {
+        self.audioPlayer.volume = MAX(0, self.audioPlayer.volume-durationVolumeValue);
+    }
+    else {
+        self.audioPlayer.volume += durationVolumeValue;
+    }
+    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1f * NSEC_PER_SEC));
+    dispatch_after(popTime, dispatch_get_main_queue(), ^(void) {
+        [self fadeSound:duration fadeOut:fadeOut];
+    });
+}
+
+-(void)playSoundFromFile:(NSURL *)fileURL indefinitely:(BOOL)indefinitely
+{
+    if(![[NSUserDefaults standardUserDefaults] boolForKey:BDGSoundOn]) {
+        return;
+    }
+    
+    if(self.audioPlayer) {
+        [self.audioPlayer stop];
+    }
+    self.audioPlayer = nil;
+    
+    NSError *error = nil;
+    _audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:fileURL error:&error];
+    if(indefinitely) {
+        self.audioPlayer.numberOfLoops = -1;
+    }
+    if(error != nil) {
+        NSLog(@"BDGSoundPlayer: Error loading audio file from URL: %@. Error: %@", fileURL, [error description]);
+    }
+    else {
+        [self.audioPlayer play];
+    }
+}
+
+-(void)playSoundFromFile:(NSURL *)fileURL
+{
+    [self playSoundFromFile:fileURL indefinitely:FALSE];
+}
+
+#pragma mark AudioToolBox Sounds
+
 -(void)loadSounds:(NSArray *)soundNamesWithNameAsID
 {
     for(NSString *soundName in soundNamesWithNameAsID) {
@@ -54,27 +111,6 @@ NSString *const BDGSoundOn = @"BDGSoundOn";
 {
     if([[NSUserDefaults standardUserDefaults] boolForKey:BDGSoundOn]) {
         [((BDGSoundEffect *)[self.sounds objectForKey:soundID]) play];
-    }
-}
-
--(void)playSoundFromFile:(NSURL *)fileURL
-{
-    if(![[NSUserDefaults standardUserDefaults] boolForKey:BDGSoundOn]) {
-        return;
-    }
-    
-    if(self.audioPlayer) {
-        [self.audioPlayer stop];
-    }
-    self.audioPlayer = nil;
-    
-    NSError *error = nil;
-    _audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:fileURL error:&error];
-    if(error != nil) {
-        NSLog(@"BDGSoundPlayer: Error loading audio file from URL: %@. Error: %@", fileURL, [error description]);
-    }
-    else {
-        [self.audioPlayer play];
     }
 }
 
